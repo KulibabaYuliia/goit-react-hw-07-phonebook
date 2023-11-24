@@ -1,9 +1,10 @@
 import { FormWrap, StyledField } from './ContactForm.styled';
 import { Formik, ErrorMessage } from 'formik';
 import * as yup from 'yup';
+import { nanoid } from 'nanoid';
 
 import { useDispatch } from 'react-redux';
-import { addContacts } from 'redux/contacts/contacts.reducer';
+import { fetchAddContacts } from 'redux/contacts/contacts.reducer';
 
 const phoneRegExp = /[0-9]{3}-[0-9]{2}-[0-9]{2}/;
 const nameRegExp = /^[a-zA-Zа-яА-Я]+(([' ][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/;
@@ -23,7 +24,12 @@ export const ContactForm = () => {
   const dispatch = useDispatch();
 
   const submitHandler = (values, action) => {
-    dispatch(addContacts(values));
+    const contact = {
+      id: nanoid(),
+      name: values.name,
+      phone: values.number,
+    };
+    dispatch(fetchAddContacts(contact));
     action.resetForm();
   };
 

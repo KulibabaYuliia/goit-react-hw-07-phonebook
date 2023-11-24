@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid';
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import axios from 'axios';
 
@@ -16,7 +15,17 @@ export const fetchContacts = createAsyncThunk(
   }
 );
 
-//
+export const fetchAddContacts = createAsyncThunk(
+  'contacts/addContact',
+  async (contact, thunkApi) => {
+    try {
+      const { data } = await axios.post(`contacts/`, contact);
+      return data;
+    } catch (err) {
+      return thunkApi.rejectWithValue(err.message);
+    }
+  }
+);
 
 export const fetchDeleteContact = createAsyncThunk(
   'contacts/deleteContact',
@@ -43,13 +52,6 @@ const contactsSlice = createSlice({
   name: 'contacts',
   initialState,
   reducers: {
-    addContacts(state, { payload }) {
-      state.contacts.items.push({
-        id: nanoid(),
-        name: payload.name,
-        phone: payload.phone,
-      });
-    },
     changeFilter(state, { payload }) {
       state.filterQuery = payload;
     },
@@ -60,6 +62,10 @@ const contactsSlice = createSlice({
         state.contacts.isLoading = false;
         state.contacts.items = payload;
       })
+      .addCase(fetchAddContacts.fulfilled, (state, { payload }) => {
+        state.contacts.isLoading = false;
+        state.contacts.items.push(payload);
+      })
       .addCase(fetchDeleteContact.fulfilled, (state, { payload }) => {
         state.contacts.isLoading = false;
         state.contacts.items = state.contacts.items.filter(
@@ -68,14 +74,22 @@ const contactsSlice = createSlice({
       })
 
       .addMatcher(
-        isAnyOf(fetchContacts.pending, fetchDeleteContact.pending),
+        isAnyOf(
+          fetchContacts.pending,
+          fetchDeleteContact.pending,
+          fetchAddContacts.pending
+        ),
         state => {
           state.contacts.isLoading = true;
           state.contacts.error = null;
         }
       )
       .addMatcher(
-        isAnyOf(fetchContacts.rejected, fetchDeleteContact.rejected),
+        isAnyOf(
+          fetchContacts.rejected,
+          fetchDeleteContact.rejected,
+          fetchAddContacts.rejected
+        ),
         (state, { payload }) => {
           state.contacts.isLoading = false;
           state.contacts.error = payload;
@@ -83,6 +97,5 @@ const contactsSlice = createSlice({
       ),
 });
 
-export const { deleteContacts, addContacts, changeFilter } =
-  contactsSlice.actions;
+export const { changeFilter } = contactsSlice.actions;
 export const contactsReducer = contactsSlice.reducer;
