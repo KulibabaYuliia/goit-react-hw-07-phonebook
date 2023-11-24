@@ -1,6 +1,6 @@
 import { ContactWrap } from './Contact.styled';
 import { useDispatch } from 'react-redux';
-import { deleteContacts } from 'redux/sliceContacts';
+import { fetchDeleteContact } from 'redux/contacts/contacts.reducer';
 
 export const Contact = ({ contact }) => {
   const dispatch = useDispatch();
@@ -8,9 +8,9 @@ export const Contact = ({ contact }) => {
   return (
     <ContactWrap>
       <span>
-        {contact.name}: {contact.number}
+        {contact.name}: {contact.phone}
       </span>
-      <button onClick={() => dispatch(deleteContacts(contact.id))}>
+      <button onClick={() => dispatch(fetchDeleteContact(contact.id))}>
         delete
       </button>
     </ContactWrap>

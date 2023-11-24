@@ -3,7 +3,7 @@ import { Formik, ErrorMessage } from 'formik';
 import * as yup from 'yup';
 
 import { useDispatch } from 'react-redux';
-import { addContacts } from 'redux/sliceContacts';
+import { addContacts } from 'redux/contacts/contacts.reducer';
 
 const phoneRegExp = /[0-9]{3}-[0-9]{2}-[0-9]{2}/;
 const nameRegExp = /^[a-zA-Zа-яА-Я]+(([' ][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/;
