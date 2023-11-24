@@ -59,20 +59,28 @@ const contactsSlice = createSlice({
   extraReducers: builder =>
     builder
       .addCase(fetchContacts.fulfilled, (state, { payload }) => {
-        state.contacts.isLoading = false;
         state.contacts.items = payload;
       })
       .addCase(fetchAddContacts.fulfilled, (state, { payload }) => {
-        state.contacts.isLoading = false;
         state.contacts.items.push(payload);
       })
       .addCase(fetchDeleteContact.fulfilled, (state, { payload }) => {
-        state.contacts.isLoading = false;
         state.contacts.items = state.contacts.items.filter(
           contact => contact.id !== payload.id
         );
       })
 
+      .addMatcher(
+        isAnyOf(
+          fetchContacts.fulfilled,
+          fetchDeleteContact.fulfilled,
+          fetchAddContacts.fulfilled
+        ),
+        state => {
+          state.contacts.isLoading = false;
+          state.contacts.error = null;
+        }
+      )
       .addMatcher(
         isAnyOf(
           fetchContacts.pending,
